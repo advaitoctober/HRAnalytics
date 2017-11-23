@@ -7,17 +7,21 @@ library(klaR)
 library("rpart")
 library("rpart.plot")
 library(randomForest)
-
+library(gbm)
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
-#pairs(hrData)
-attach(hrData)
+
 leaveSat = hrData[,1]
 leaveSat = as.factor(ifelse(leaveSat < 0.7,1,0))
 satPred <- mean(leaveSat != hrData$left)
 satPred
+
 hist(hrData$satisfaction_level)
+hrData$satisfaction_level = NULL
+#pairs(hrData)
+attach(hrData)
+
 set.seed(667)
 validIndex <- sample(1:nrow(hrData), .10*nrow(hrData))
 hr_valid <- hrData[validIndex,]
@@ -47,7 +51,7 @@ summary(hrLGMod)
 names(hrLGMod)
 
 #Predicting
-hrLGPred_test <- predict.glm(hrLGMod, newdata = hr_test, type = "class")
+hrLGPred_test <- predict.glm(hrLGMod, newdata = hr_test, type = "response")
 
 hrLGPred_train <- predict(hrLGMod, newdata = hr_train, type = "response")
 
@@ -153,3 +157,38 @@ trainErrVector = c(trainErrVector,RF_train_err)
 #############################################
 #Bagging
 ############################################
+hrBAGMod = randomForest(left~.,data = hr_train, n.tree =10000, mtry = 9)
+varImpPlot(hrBAGMod)
+
+hrBAGPred_test <- predict(hrBAGMod, newdata = hr_test,type='class')
+hrBAGPred_train <- predict(hrBAGMod, newdata = hr_train, type='class')
+hrBAGPred_valid <- predict(hrBAGMod, newdata = hr_valid, type='class')
+
+BAG_test_err <- mean(hrBAGPred_test != hr_test$left)
+BAG_train_err <- mean(hrBAGPred_train != hr_train$left)
+BAG_valid_err <- mean(hrBAGPred_valid != hr_valid$left)
+
+modelName = c(modelName,'BAG')
+testErrVector = c(testErrVector,BAG_test_err)
+trainErrVector = c(trainErrVector,BAG_train_err)
+
+############################################
+#Boosting
+############################################
+dep = floor(sqrt(NCOL(data)))
+boost_train = hr_train
+boost_train$left = as.numeric(boost_train$left)-1
+hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =1000,shrinkage = .1 ,interaction.depth = dep,distribution = 'adaboost')
+
+hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 1000)
+hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 10000)
+hrBOOSTPred_valid <- predict(hrBOOSTMod, newdata = hr_valid,type='response', n.trees = 10000)
+
+BOOST_test_err <- mean(hrBOOSTPred_test != hr_test$left)
+BOOST_train_err <- mean(hrBOOSTPred_train != hr_train$left)
+BOOST_valid_err <- mean(hrBOOSTPred_valid != hr_valid$left)
+
+modelName = c(modelName,'BOOST')
+testErrVector = c(testErrVector,BOOST_test_err)
+trainErrVector = c(trainErrVector,BOOST_train_err)
+
