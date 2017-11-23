@@ -10,10 +10,11 @@ library(randomForest)
 
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-pairs(hrData)
+hrData$left <- as.factor(hrData$left)
+#pairs(hrData)
 attach(hrData)
 leaveSat = hrData[,1]
-leaveSat = ifelse(leaveSat < 0.7,1,0)
+leaveSat = as.factor(ifelse(leaveSat < 0.7,1,0))
 satPred <- mean(leaveSat != hrData$left)
 satPred
 hist(hrData$satisfaction_level)
@@ -46,7 +47,7 @@ summary(hrLGMod)
 names(hrLGMod)
 
 #Predicting
-hrLGPred_test <- predict.glm(hrLGMod, newdata = hr_test, type = "response")
+hrLGPred_test <- predict.glm(hrLGMod, newdata = hr_test, type = "class")
 
 hrLGPred_train <- predict(hrLGMod, newdata = hr_train, type = "response")
 
@@ -57,8 +58,8 @@ hrLGPred_test = round(hrLGPred_test)
 hrLGPred_train = round(hrLGPred_train)
 
 #Error calculation
-LG_train_err <- sum(abs(hrLGPred_train- leftTrue_train))/length(leftTrue_train) #0.0870
-LG_test_err <- sum(abs(hrLGPred_test- leftTrue_test))/length(leftTrue_test) #0.1098
+LG_test_err <- mean(as.factor(hrLGPred_test) != hr_test$left)
+LG_train_err <- mean(as.factor(hrLGPred_train) != hr_train$left)
 
 modelName = c(modelName,'Logistic regression')
 testErrVector = c(testErrVector,LG_test_err)
@@ -105,7 +106,7 @@ trainErrVector = c(trainErrVector,QDA_train_err)
 model.control <- rpart.control(minsplit = 5, xval = 10, cp = 0)
 hrTreeMod <- rpart(left~., data = hr_train, method = "class", control = model.control)
 plot(hrTreeMod, uniform = T, compress = T)
-text(hrTreeMod, cex = 0)
+text(hrTreeMod, cex = 0.5)
 min_cp = which.min(hrTreeMod$cptable[,4])
 
 
@@ -137,7 +138,7 @@ trainErrVector = c(trainErrVector,PruneTree_train_err)
 hrRFMod = randomForest(left~.,data = hr_train, n.tree =10000)
 varImpPlot(hrRFMod)
 
-hrRFPred_test <- predict(hrRFMod, newdata = hr_test,type='response')
+hrRFPred_test <- predict(hrRFMod, newdata = hr_test,type='class')
 hrRFPred_train <- predict(hrRFMod, newdata = hr_train, type='class')
 hrRFPred_valid <- predict(hrRFMod, newdata = hr_valid, type='class')
 
@@ -148,3 +149,7 @@ RF_valid_err <- mean(hrRFPred_valid != hr_valid$left)
 modelName = c(modelName,'RF')
 testErrVector = c(testErrVector,RF_test_err)
 trainErrVector = c(trainErrVector,RF_train_err)
+
+#############################################
+#Bagging
+############################################
