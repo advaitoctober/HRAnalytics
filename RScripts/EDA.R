@@ -3,6 +3,7 @@ setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
 getwd()
 require(class)
 library(ggplot2)
+require(reshape2)
 
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
@@ -40,19 +41,32 @@ promoDF = data.frame(Promotion = c("Promoted","Promoted","NotPromoted","NotPromo
 
 
 ggplot(promoDF, aes(Promotion,NoOfEmployees , fill = Left)) + 
-  geom_bar(stat="identity", position = "dodge") + 
-  scale_fill_brewer(palette = "Set1")
+  geom_bar(stat="identity", position = "dodge")
 
 
-summary(hrData$last_evaluation)
+############################
+#By Department
+############################
+depDF = data.frame(aggregate(left~department,data = hrData,FUN = length))
+colnames(depDF) = c("Department","TotalEmployees")
+depDF$Left = (aggregate(left~department,data = hrData,FUN = sum))[,2]
+depDF$Stayed = depDF$TotalEmployees - depDF$Left
+depDF$Attrition = (depDF$Left / depDF$TotalEmployees) * 100
+depDFMelt = melt(depDF[,c("Department","Stayed","Left")])
+
+
+ggplot(depDFMelt,aes(x = Department,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+
+ggplot(depDF,aes(x = Department,y = Attrition)) + 
+  geom_bar(aes(fill = Attrition),stat = "identity",position = "dodge")
+
 
 plot(hrData$last_evaluation[which(left==0)])
 
 cor(hrData[,1:8])
 
-pairs(highSal)
-pairs(medSal)
-pairs(lowSal)
+
 
 #By work accident
 nrow(subset(highSal, Work_accident ==1)) # 192
