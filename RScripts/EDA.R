@@ -61,6 +61,42 @@ ggplot(depDFMelt,aes(x = Department,y = value)) +
 ggplot(depDF,aes(x = Department,y = Attrition)) + 
   geom_bar(aes(fill = Attrition),stat = "identity",position = "dodge")
 
+################################
+#Satisfaction Level
+################################
+satDF = hrData[,c("satisfaction_level","left")]
+satDF$sat_category = ifelse(satDF$satisfaction_level>= 0.8,"Very High","")
+satDF$sat_category = ifelse(satDF$satisfaction_level>= 0.6 & satDF$satisfaction_level< 0.8,"High","")
+satDF$sat_category = ifelse(satDF$satisfaction_level>= 0.4 & satDF$satisfaction_level< 0.6,"Medium","")
+satDF$sat_category = ifelse(satDF$satisfaction_level>= 0.2 & satDF$satisfaction_level< 0.4,"Low","")
+satDF$sat_category = ifelse(satDF$satisfaction_level< 0.2,"Very Low","")
+
+
+satDF$sat_category = as.factor(ifelse(satDF$satisfaction_level>= 0.8,"Very High",ifelse(satDF$satisfaction_level>= 0.6 & satDF$satisfaction_level< 0.8,"High",ifelse(satDF$satisfaction_level>= 0.4 & satDF$satisfaction_level< 0.6,"Medium",ifelse(satDF$satisfaction_level>= 0.2 & satDF$satisfaction_level< 0.4,"Low",ifelse(satDF$satisfaction_level< 0.2,"Very Low",""))))))
+
+satAggDF = data.frame(aggregate(left~sat_category,data = satDF,FUN = length))
+colnames(satAggDF) = c("SatisfactionCategory","TotalEmployees")
+satAggDF$Left = (aggregate(left~sat_category,data = satDF,FUN = sum))[,2]
+
+satAggDF$Stayed = satAggDF$TotalEmployees - satAggDF$Left
+satAggDF$Attrition = (satAggDF$Left / satAggDF$TotalEmployees) * 100
+
+
+satDFMelt = melt(satAggDF[,c("SatisfactionCategory","Stayed","Left")])
+
+
+ggplot(satDFMelt,aes(x = SatisfactionCategory,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")+
+  scale_x_discrete(limits=c("Very Low","Low","Medium","High","Very High"))
+
+ggplot(satAggDF,aes(x = SatisfactionCategory,y = Attrition)) + 
+  geom_bar(aes(fill = Attrition),stat = "identity",position = "dodge")+
+  scale_x_discrete(limits=c("Very Low","Low","Medium","High","Very High"))+
+  scale_colour_manual(values = rev(brewer.pal(3,"BuPu")))
+
+
+
+
 
 plot(hrData$last_evaluation[which(left==0)])
 
