@@ -5,7 +5,7 @@ require(class)
 
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-pairs(hrData)
+#pairs(hrData)
 attach(hrData)
 
 #By salary

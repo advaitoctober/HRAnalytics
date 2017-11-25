@@ -178,7 +178,7 @@ trainErrVector = c(trainErrVector,BAG_train_err)
 dep = floor(sqrt(NCOL(data)))
 boost_train = hr_train
 boost_train$left = as.numeric(boost_train$left)-1
-hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =1000,shrinkage = .1 ,interaction.depth = dep,distribution = 'adaboost')
+hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =1000,shrinkage = .001 ,interaction.depth = dep,distribution = 'adaboost')
 
 hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 1000)
 hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 10000)
