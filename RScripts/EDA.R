@@ -2,6 +2,7 @@ rm(list = ls())
 setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
 getwd()
 require(class)
+library(ggplot2)
 
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
@@ -16,10 +17,36 @@ lowSal = subset(hrData, salary == "low")
 summary(highSal)
 summary(lowSal)
 #Number of people left in per salary band
-nrow(subset(highSal, left ==1)) #82/1237 6.66%
-nrow(subset(medSal, left ==1)) #1317/6446 20.43%
-nrow(subset(lowSal, left ==1)) #2127/7316 29.07%
+vSal = c('low','meduim','high')
+vTotPop = c(nrow(lowSal),nrow(medSal),nrow(highSal))
+vSalLeft = c(nrow(subset(lowSal, left ==1)),nrow(subset(medSal, left ==1)),nrow(subset(highSal, left ==1)) )
+salDF = data.frame(Salary=vSal,TotalEmployees = vTotPop, EmployeesLeft=vSalLeft)
+salDF["PercentLeft"] = (salDF["EmployeesLeft"]/salDF["TotalEmployees"])*100
+salDF["EmployeesStayed"] = (salDF["TotalEmployees"]-salDF["EmployeesLeft"])
+barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary")
 
+
+
+############################
+#By Promotion last 5 year
+############################
+plot(hrData$promotion_last_5years)
+promo1Left = nrow(subset(hrData,promotion_last_5years ==1 & left==1))
+promo0Left = nrow(subset(hrData,promotion_last_5years ==0 & left==1))
+promo1Stay = nrow(subset(hrData,promotion_last_5years ==1 & left==0))
+promo0Stay = nrow(subset(hrData,promotion_last_5years ==0 & left==0))
+
+promoDF = data.frame(Promotion = c("Promoted","Promoted","NotPromoted","NotPromoted") ,Left = c("Stayed","Left","Stayed","Left"),NoOfEmployees = c(promo1Stay,promo1Left,promo0Stay,promo0Left))
+
+
+ggplot(promoDF, aes(Promotion,NoOfEmployees , fill = Left)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  scale_fill_brewer(palette = "Set1")
+
+
+summary(hrData$last_evaluation)
+
+plot(hrData$last_evaluation[which(left==0)])
 
 cor(hrData[,1:8])
 
