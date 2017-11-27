@@ -52,7 +52,6 @@ names(hrLGMod)
 
 #Predicting
 hrLGPred_test <- predict.glm(hrLGMod, newdata = hr_test, type = "response")
-
 hrLGPred_train <- predict(hrLGMod, newdata = hr_train, type = "response")
 
 
@@ -130,7 +129,7 @@ PruneTree_test_err <- mean(hrPruneTreePred_test != hr_test$left)
 PruneTree_train_err <- mean(hrPruneTreePred_train != hr_train$left)
 PruneTree_valid_err <- mean(hrPruneTreePred_valid != hr_valid$left)
 
-modelName = c(modelName,'PruneTree')
+modelName = c(modelName,'Single Pruned Tree')
 testErrVector = c(testErrVector,PruneTree_test_err)
 trainErrVector = c(trainErrVector,PruneTree_train_err)
 
@@ -150,14 +149,14 @@ RF_test_err <- mean(hrRFPred_test != hr_test$left)
 RF_train_err <- mean(hrRFPred_train != hr_train$left)
 RF_valid_err <- mean(hrRFPred_valid != hr_valid$left)
 
-modelName = c(modelName,'RF')
+modelName = c(modelName,'Random Forest')
 testErrVector = c(testErrVector,RF_test_err)
 trainErrVector = c(trainErrVector,RF_train_err)
 
 #############################################
 #Bagging
 ############################################
-hrBAGMod = randomForest(left~.,data = hr_train, n.tree =10000, mtry = 9)
+hrBAGMod = randomForest(left~.,data = hr_train, n.tree =10000, mtry = 8)
 varImpPlot(hrBAGMod)
 
 hrBAGPred_test <- predict(hrBAGMod, newdata = hr_test,type='class')
@@ -168,7 +167,7 @@ BAG_test_err <- mean(hrBAGPred_test != hr_test$left)
 BAG_train_err <- mean(hrBAGPred_train != hr_train$left)
 BAG_valid_err <- mean(hrBAGPred_valid != hr_valid$left)
 
-modelName = c(modelName,'BAG')
+modelName = c(modelName,'Bagging')
 testErrVector = c(testErrVector,BAG_test_err)
 trainErrVector = c(trainErrVector,BAG_train_err)
 
@@ -178,17 +177,19 @@ trainErrVector = c(trainErrVector,BAG_train_err)
 dep = floor(sqrt(NCOL(data)))
 boost_train = hr_train
 boost_train$left = as.numeric(boost_train$left)-1
-hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =1000,shrinkage = .001 ,interaction.depth = dep,distribution = 'adaboost')
+hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =100,shrinkage = .0001 ,interaction.depth = dep,distribution = 'adaboost')
 
-hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 1000)
-hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 10000)
-hrBOOSTPred_valid <- predict(hrBOOSTMod, newdata = hr_valid,type='response', n.trees = 10000)
+hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 100)
+hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 1000)
+hrBOOSTPred_valid <- predict(hrBOOSTMod, newdata = hr_valid,type='response', n.trees = 1000)
 
 BOOST_test_err <- mean(hrBOOSTPred_test != hr_test$left)
+BOOST_test_err
 BOOST_train_err <- mean(hrBOOSTPred_train != hr_train$left)
 BOOST_valid_err <- mean(hrBOOSTPred_valid != hr_valid$left)
 
-modelName = c(modelName,'BOOST')
+modelName = c(modelName,'Boosting')
 testErrVector = c(testErrVector,BOOST_test_err)
 trainErrVector = c(trainErrVector,BOOST_train_err)
 
+errorDF = data.frame(Model_Name = modelName,Training_Error = trainErrVector,Test_Error = testErrVector)
