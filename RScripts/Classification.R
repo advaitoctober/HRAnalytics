@@ -193,3 +193,15 @@ testErrVector = c(testErrVector,BOOST_test_err)
 trainErrVector = c(trainErrVector,BOOST_train_err)
 
 errorDF = data.frame(Model_Name = modelName,Training_Error = trainErrVector,Test_Error = testErrVector)
+
+ggplot(errorDF, aes(x = Model_Name,group = 1)) + 
+  geom_line(aes(y = testErrVector), colour="blue") + 
+  geom_line(aes(y = trainErrVector), colour = "red") +
+  scale_x_discrete(limits=c("Logistic regression","LDA","QDA","Single Pruned Tree","Random Forest","Bagging"))+
+  geom_point(aes(y = testErrVector), colour="blue") + 
+  geom_point(aes(y = trainErrVector), colour = "red") +
+  labs(y = "Error",x= "Models")
+  
+
+errorDFMelt = melt(errorDF[,c("Model_Name","Training_Error","Test_Error")])
+ggplot(errorDFMelt, aes(x = Model_Name, y = value, colour = variable,group = 1)) + geom_line()

@@ -1,14 +1,14 @@
 rm(list = ls())
-#setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
-setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
+setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
+#setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
 getwd()
 require(class)
 library(ggplot2)
 require(reshape2)
 
 #Data Loading
-#hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
+hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
+#hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
 #pairs(hrData)
 attach(hrData)
 
@@ -29,7 +29,7 @@ vSalLeft = c(nrow(subset(lowSal, left ==1)),nrow(subset(medSal, left ==1)),nrow(
 salDF = data.frame(Salary=vSal,TotalEmployees = vTotPop, EmployeesLeft=vSalLeft)
 salDF["PercentLeft"] = (salDF["EmployeesLeft"]/salDF["TotalEmployees"])*100
 salDF["EmployeesStayed"] = (salDF["TotalEmployees"]-salDF["EmployeesLeft"])
-barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary",title(main = "Salary vs Attrition %"))
+barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary",main="Salary vs Attrition %")
 
 ############################
 #By Promotion last 5 year
@@ -162,4 +162,26 @@ avg_monthlyhrs_if_stay
 min(avgmhrs_stay$hrData.average_montly_hours)
 max(avgmhrs_stay$hrData.average_montly_hours)
 
+##########################################
+#No. of Projects
+##########################################
+summary(hrData$number_project)
+noProj = data.frame(aggregate(left~number_project,data = hrData,FUN = length))
+colnames(noProj) = c("No_Of_Project","TotalEmployees")
+noProj$Left = (aggregate(left~number_project,data = satDF,FUN = sum))[,2]
+noProj$Stayed = noProj$TotalEmployees - noProj$Left
+noProj$Attrition = (noProj$Left / noProj$TotalEmployees) * 100
+noProj$No_Of_Project = as.factor(noProj$No_Of_Project)
+
+plot(noProj$No_Of_Project,noProj$Attrition)
+
+noProjMelt = melt(noProj[,c("No_Of_Project","Stayed","Left")])
+
+ggplot(noProjMelt,aes(x = No_Of_Project,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+
+
+ggplot(noProj, aes(x=No_Of_Project, y=Attrition)) +
+  geom_line(aes(color=Attrition))+
+  geom_point(aes(color=Attrition))
 
