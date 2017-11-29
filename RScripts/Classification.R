@@ -166,6 +166,10 @@ hrBAGPred_test <- predict(hrBAGMod, newdata = hr_test,type='class')
 hrBAGPred_train <- predict(hrBAGMod, newdata = hr_train, type='class')
 hrBAGPred_valid <- predict(hrBAGMod, newdata = hr_valid, type='class')
 
+
+plot(roc(hr_test$left, hrBAGPred_test, direction="<"),
+     col="yellow", lwd=3, main="The turtle finds its way")
+
 BAG_test_err <- mean(hrBAGPred_test != hr_test$left)
 BAG_train_err <- mean(hrBAGPred_train != hr_train$left)
 BAG_valid_err <- mean(hrBAGPred_valid != hr_valid$left)
@@ -209,3 +213,5 @@ ggplot(errorDF, aes(x = Model_Name,group = 1)) +
 
 errorDFMelt = melt(errorDF[,c("Model_Name","Training_Error","Test_Error")])
 ggplot(errorDFMelt, aes(x = Model_Name, y = value, colour = variable,group = 1)) + geom_line()
+
+
