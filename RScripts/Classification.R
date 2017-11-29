@@ -8,6 +8,9 @@ library("rpart")
 library("rpart.plot")
 library(randomForest)
 library(gbm)
+library(quantmod)
+getSymbols('AAPL')
+getSymbols('FB')
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
@@ -195,12 +198,13 @@ trainErrVector = c(trainErrVector,BOOST_train_err)
 errorDF = data.frame(Model_Name = modelName,Training_Error = trainErrVector,Test_Error = testErrVector)
 
 ggplot(errorDF, aes(x = Model_Name,group = 1)) + 
-  geom_line(aes(y = testErrVector), colour="blue") + 
-  geom_line(aes(y = trainErrVector), colour = "red") +
+  geom_line(aes(y = testErrVector), colour="orange") + 
+  geom_line(aes(y = trainErrVector), colour = "darkgreen") +
   scale_x_discrete(limits=c("Logistic regression","LDA","QDA","Single Pruned Tree","Random Forest","Bagging"))+
-  geom_point(aes(y = testErrVector), colour="blue") + 
-  geom_point(aes(y = trainErrVector), colour = "red") +
-  labs(y = "Error",x= "Models")
+  geom_point(aes(y = testErrVector), colour="orange") + 
+  geom_point(aes(y = trainErrVector), colour = "darkgreen") +
+  labs(y = "Error",x= "Models") +
+  scale_colour_manual(values=c("red", "blue"))
   
 
 errorDFMelt = melt(errorDF[,c("Model_Name","Training_Error","Test_Error")])
