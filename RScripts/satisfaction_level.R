@@ -56,26 +56,28 @@ median.train <- median(hr_train$satisfaction_level)
 #linear
 
 linear.model <- lm(formula = satisfaction_level~.,data = hr_train)
-linear.predictions <- predict(linear.model,data = hr_test)
+linear.predictions <- predict(linear.model,newdata = hr_test)
 #median.predicted.score <- ifelse(linear.predictions >= 0.65,0,1)
+
+linear.error <- mean((linear.predictions-sat_test)^2)
 
 #1 - mean(median.predicted.score != median.left.score)
 
 #linear using bootstrap
 
-linear.results <- ((sat_test-linear.predictions)^2)
-library("boot")
+#linear.results <- ((sat_test-linear.predictions)^2)
+#library("boot")
 
-linear.function <- function(formula,data,test_data,indices){
-  d <- data[indices,]
-  fit <- lm(formula,data = d)
-  preds <- predict(fit,data = test_data)
-  return(preds)
-}
+#linear.function <- function(formula,data,test_data,indices){
+ # d <- data[indices,]
+  #fit <- lm(formula,data = d)
+  #preds <- predict(fit,data = test_data)
+  #return(preds)
+#}
 
-lin.result <- boot(data = hr_train,test_data = hr_test,statistic = linear.function, R =1000, formula = satisfaction_level~.)
+#lin.result <- boot(data = hr_train,test_data = hr_test,statistic = linear.function, R =1000, formula = satisfaction_level~.)
 
-predicted.values <- lin.result$t0
+#predicted.values <- lin.result$t0
 #median.predicted.values <- ifelse(predicted.values >= 0.65,0,1)
 
 #1 - mean(median.predicted.values != median.left.score)
@@ -87,7 +89,7 @@ y = as.numeric(sat_train)
 cv.glmnet(x,y,alpha = 0)
 ridge.mod = glmnet(x,y,alpha = 0,lambda = 0.02703303)
 ridge.predictions <- predict(ridge.mod,newx = as.matrix(hr_test),s =0.02703303)
-mean((ridge.predictions-sat_test)^2)
+ridge.error <- mean((ridge.predictions-sat_test)^2)
 
 
 #lasso
@@ -95,7 +97,7 @@ mean((ridge.predictions-sat_test)^2)
 cv.glmnet(x,y,alpha = 1)
 lasso.mod = glmnet(x,y,alpha = 1,lambda = 0.007880272)
 lasso.predictions <- predict(ridge.mod,newx = as.matrix(hr_test),s = 0.007880272)
-mean((lasso.predictions-sat_test)^2)
+lasso.error <- mean((lasso.predictions-sat_test)^2)
 
 
 #PCA
@@ -103,13 +105,68 @@ library("pls")
 
 pcr.fit <- pcr(satisfaction_level~., data = as.data.frame(hr_train), scale = TRUE, validation = "CV")
 test_pred <- predict(pcr.fit, newdata = hr_test)
-mean((sat_test - test_pred)^2)
+pca.error <- mean((sat_test - test_pred)^2)
 
 #PLS
 
 pls.fit <- plsr(satisfaction_level~., data = as.data.frame(hr_train), scale = TRUE, validation = "CV")
 test_pred <- predict(pls.fit,newdata = hr_test)
-mean((sat_test - test_pred)^2)
+pls.error <- mean((sat_test - test_pred)^2)
+
+
+#forward subset
+library("leaps")
+bests = regsubsets(satisfaction_level ~.,data = hr_train, method = "forward")
+summary(bests)
+selects <- c("last_evaluation","number_project","time_spend_company","Work_accident","low_salary","promotion_last_5years",
+             "high_salary","accounting","satisfaction_level")
+temp_train <- hr_train[,(names(hr_train) %in% selects)]
+temp_test <- hr_test[,names(hr_test) %in% selects]
+
+linear.modelf <- lm(formula = satisfaction_level~.,data = temp_train)
+linear.predictionsf <- predict(linear.modelf,newdata = temp_test)
+
+forward.error <- mean((sat_test-linear.predictionsf)^2)
+
+#backward subset
+bests = regsubsets(satisfaction_level ~.,data = hr_train, method = "backward")
+summary(bests)
+selects <- c("last_evaluation","number_project","time_spend_company","Work_accident","low_salary","promotion_last_5years",
+             "average_montly_hours","accounting ","satisfaction_level","med_salary")
+
+temp_train <- hr_train[,(names(hr_train) %in% selects)]
+temp_test <- hr_test[,names(hr_test) %in% selects]
+
+linear.modelb <- lm(formula = satisfaction_level~.,data = temp_train)
+linear.predictionsb <- predict(linear.modelb,newdata = temp_test)
+
+backeard.error <- mean((sat_test-linear.predictionsb)^2)
+
+#best subset
+
+bests = regsubsets(satisfaction_level ~.,data = hr_train, method = "best")
+summary(bests)
+selects <- c("last_evaluation,number_project","time_spend_company","Work_accident","low_salary","promotion_last_5years",
+             "average_montly_hours","accounting ","satisfaction_level","med_salary")
+
+temp_train <- hr_train[,(names(hr_train) %in% selects)]
+temp_test <- hr_test[,names(hr_test) %in% selects]
+
+linear.modelbs <- lm(formula = satisfaction_level~.,data = temp_train)
+linear.predictionsbs <- predict(linear.modelbs,newdata = temp_test)
+
+best.error <- mean((sat_test-linear.predictionsb)^2)
+
+
+
+
+#plot errors
+error_list <- c(linear.error,ridge.error,lasso.error,pca.error,pls.error,forward.error,backeard.error,best.error)
+errors <-  c("linear.error","ridge.error","lasso.error","pca.error","pls.error","forward.error","backeard.error","best.error")
+
+
+barplot(error_list,xaxt="n",ylab = "Errors",xlab="Methods",col = "blue")
+axis(1, at=1:8,labels = errors[1:8])
 
 
 
