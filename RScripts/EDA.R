@@ -145,6 +145,26 @@ avg_time_spent_if_stay
 min(timespent_stay$hrData.time_spend_company)
 max(timespent_stay$hrData.time_spend_company)
 
+summary(hrData$time_spend_company)
+noYears = data.frame(aggregate(left~time_spend_company,data = hrData,FUN = length))
+colnames(noYears) = c("No_Of_Years_spent_in_company","TotalEmployees")
+noYears$Left = (aggregate(left~time_spend_company,data = satDF,FUN = sum))[,2]
+noYears$Stayed = noYears$TotalEmployees - noYears$Left
+noYears$Attrition = (noYears$Left / noYears$TotalEmployees) * 100
+noYears$No_Of_Years_spent_in_company = as.factor(noYears$No_Of_Years_spent_in_company)
+
+#plot(noProj$No_Of_Project,noProj$Attrition)
+
+noYearsMelt = melt(noYears[,c("No_Of_Years_spent_in_company","Stayed","Left")])
+
+ggplot(noYearsMelt,aes(x = No_Of_Years_spent_in_company,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+
+
+ggplot(noYears,aes(x=No_Of_Years_spent_in_company, y=Attrition , group = 1)) +
+  geom_line(aes(color=Attrition)) +
+  geom_point(aes(color=Attrition))
+
 ################################
 #Average monthly hours at workplace
 ################################        
@@ -161,6 +181,27 @@ avg_monthlyhrs_if_stay <- mean(avgmhrs_stay$hrData.average_montly_hours)
 avg_monthlyhrs_if_stay
 min(avgmhrs_stay$hrData.average_montly_hours)
 max(avgmhrs_stay$hrData.average_montly_hours)
+
+summary(hrData$average_montly_hours)
+noHours = data.frame(aggregate(left~average_montly_hours,data = hrData,FUN = length))
+colnames(noHours) = c("Average_Monthly_Hours","TotalEmployees")
+##
+noHours$Left = (aggregate(left~average_montly_hours,data = satDF,FUN = sum))[,2]
+noHours$Stayed = noHours$TotalEmployees - noHours$Left
+noHours$Attrition = (noHours$Left / noHours$TotalEmployees) * 100
+noHours$Average_Monthly_Hours = as.factor(noHours$Average_Monthly_Hours)
+
+#plot(noProj$No_Of_Project,noProj$Attrition)
+
+noHourMelt = melt(noHours[,c("Average_Monthly_Hours","Stayed","Left")])
+
+ggplot(noHourMelt,aes(x = Average_Monthly_Hours,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+
+
+ggplot(noHours,aes(x=Average_Monthly_Hours, y=Attrition , group = 1)) +
+  geom_line(aes(color=Attrition)) +
+  geom_point(aes(color=Attrition))
 
 ##########################################
 #No. of Projects
@@ -185,3 +226,17 @@ ggplot(noProj,aes(x=No_Of_Project, y=Attrition , group = 1)) +
   geom_line(aes(color=Attrition)) +
   geom_point(aes(color=Attrition))
 
+##########################################
+#Relation between no of years and the projects completed        
+##########################################
+plot(hrData$number_project,hrData$time_spend_company)
+
+avg_yrs_2 = mean(hrData[hrData$number_project==2,]$time_spend_company)
+avg_yrs_3 = mean(hrData[hrData$number_project==3,]$time_spend_company)
+avg_yrs_4 = mean(hrData[hrData$number_project==4,]$time_spend_company)
+avg_yrs_5 = mean(hrData[hrData$number_project==5,]$time_spend_company)
+avg_yrs_6 = mean(hrData[hrData$number_project==6,]$time_spend_company)
+avg_yrs_7 = mean(hrData[hrData$number_project==7,]$time_spend_company)
+
+p_vs_TimeSpentDF = data.frame(No_of_projects =  c(2,3,4,5,6,7),Avg_Years_Spent = c(avg_yrs_2,avg_yrs_3,avg_yrs_4,avg_yrs_5,avg_yrs_6,avg_yrs_7))
+plot(p_vs_TimeSpentDF$No_of_projects,p_vs_TimeSpentDF$Avg_Years_Spent,xlab = "No of Projects",ylab = "Average Years spent",main = "Plot of Projects vs Average Years Spent",type = 'b')
