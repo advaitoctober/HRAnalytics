@@ -1,14 +1,14 @@
 rm(list = ls())
-setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
-#setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
+#setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
+setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
 getwd()
 require(class)
 library(ggplot2)
 require(reshape2)
 
 #Data Loading
-hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-#hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
+#hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
+hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
 #pairs(hrData)
 attach(hrData)
 
@@ -103,9 +103,9 @@ ggplot(satAggDF,aes(x = SatisfactionCategory,y = Attrition)) +
   scale_colour_manual(values = rev(brewer.pal(3,"BuPu")))
 
 
-plot(hrData$last_evaluation[which(left==0)])
+#plot(hrData$last_evaluation[which(left==0)])
 
-cor(hrData[,1:8])
+#cor(hrData[,1:8])
 
 ################################
 #By work accident
@@ -173,7 +173,7 @@ noProj$Stayed = noProj$TotalEmployees - noProj$Left
 noProj$Attrition = (noProj$Left / noProj$TotalEmployees) * 100
 noProj$No_Of_Project = as.factor(noProj$No_Of_Project)
 
-plot(noProj$No_Of_Project,noProj$Attrition)
+#plot(noProj$No_Of_Project,noProj$Attrition)
 
 noProjMelt = melt(noProj[,c("No_Of_Project","Stayed","Left")])
 
@@ -181,7 +181,7 @@ ggplot(noProjMelt,aes(x = No_Of_Project,y = value)) +
   geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
 
 
-ggplot(noProj, aes(x=No_Of_Project, y=Attrition)) +
-  geom_line(aes(color=Attrition))+
+ggplot(noProj,aes(x=No_Of_Project, y=Attrition , group = 1)) +
+  geom_line(aes(color=Attrition)) +
   geom_point(aes(color=Attrition))
 
