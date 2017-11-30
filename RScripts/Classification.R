@@ -235,3 +235,10 @@ plot(PruneTreeRocCurve, add=TRUE, col='Orange',label = "PrunedTree")
 plot(RFRocCurve, add=TRUE, col='Blue',label = "Random Forest")
 plot(BAGRocCurve, add=TRUE, col='red',label = "Bagging")
 legend("bottomright",legend = c("Logistic Regression","LDA","QDA","Pruned Tree","Random Forest","Bagging"),)
+
+
+
+plot(hrData$number_project,hrData$average_montly_hours,col=hrData$left)
+pairs(hrData[,c(1:5,7)],col=hrData$left)
+
+hrData[1,c(1:5,7)]
