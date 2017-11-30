@@ -1,5 +1,10 @@
 rm(list = ls())
-setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
+install.packages("quantmod")
+install.packages("rpart.plot")
+install.packages("pROC")
+
+#setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
+setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
 getwd()
 require(class)
 library(caret)
@@ -10,10 +15,11 @@ library(randomForest)
 library(gbm)
 library(quantmod)
 library("pROC")
-getSymbols('AAPL')
-getSymbols('FB')
+#getSymbols('AAPL')
+#getSymbols('FB')
 #Data Loading
-hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
+#hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
+hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
 
 leaveSat = hrData[,1]
@@ -234,7 +240,7 @@ plot(QDARocCurve, add=TRUE, col='Pink',label = "QDA")
 plot(PruneTreeRocCurve, add=TRUE, col='Orange',label = "PrunedTree")
 plot(RFRocCurve, add=TRUE, col='Blue',label = "Random Forest")
 plot(BAGRocCurve, add=TRUE, col='red',label = "Bagging")
-legend("bottomright",legend = c("Logistic Regression","LDA","QDA","Pruned Tree","Random Forest","Bagging"),)
+legend("bottomright",legend = c("Logistic Regression","LDA","QDA","Pruned Tree","Random Forest","Bagging"))
 
 
 

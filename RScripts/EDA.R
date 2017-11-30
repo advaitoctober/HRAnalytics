@@ -2,9 +2,14 @@ rm(list = ls())
 #setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
 setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
 getwd()
+#install.packages("ggcorrplot")
+#install.packages("GGally")
+
 require(class)
 library(ggplot2)
 require(reshape2)
+library(ggcorrplot)
+library(GGally)
 
 #Data Loading
 #hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
@@ -255,5 +260,4 @@ ggplot(p_vs_TimeSpentDF,aes(x=No_of_projects, y=Avg_Years_Spent)) +
   ggtitle("No of Projects vs Average Years Spent") + 
   labs(y ="Average Years Spent",x = "No of Projects",fill="No of Projects")
 
-  
-
+ggcorr(hrData, hjust = 0.75, size = 5, color = "grey50", layout.exp = 1 ,title(main = "Correlation between various Parameters"))
