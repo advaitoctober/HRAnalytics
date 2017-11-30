@@ -29,7 +29,14 @@ vSalLeft = c(nrow(subset(lowSal, left ==1)),nrow(subset(medSal, left ==1)),nrow(
 salDF = data.frame(Salary=vSal,TotalEmployees = vTotPop, EmployeesLeft=vSalLeft)
 salDF["PercentLeft"] = (salDF["EmployeesLeft"]/salDF["TotalEmployees"])*100
 salDF["EmployeesStayed"] = (salDF["TotalEmployees"]-salDF["EmployeesLeft"])
-barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary",main="Salary vs Attrition %")
+
+#barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary",main="Salary vs Attrition %")
+
+ggplot(salDF,aes(x=salDF$Salary, y= salDF$PercentLeft,fill=salDF$Salary)) +
+geom_bar(stat="identity", position = "dodge") + 
+ggtitle("\tSalary Type vs Percentage Attrition") + 
+  labs(y ="Percentage left",x = "Salary Level",fill="Salary Levels")
+
 
 ############################
 #By Promotion last 5 year
@@ -240,3 +247,13 @@ avg_yrs_7 = mean(hrData[hrData$number_project==7,]$time_spend_company)
 
 p_vs_TimeSpentDF = data.frame(No_of_projects =  c(2,3,4,5,6,7),Avg_Years_Spent = c(avg_yrs_2,avg_yrs_3,avg_yrs_4,avg_yrs_5,avg_yrs_6,avg_yrs_7))
 plot(p_vs_TimeSpentDF$No_of_projects,p_vs_TimeSpentDF$Avg_Years_Spent,xlab = "No of Projects",ylab = "Average Years spent",main = "Plot of Projects vs Average Years Spent",type = 'b')
+
+
+ggplot(p_vs_TimeSpentDF,aes(x=No_of_projects, y=Avg_Years_Spent)) +
+  geom_line(aes(color=No_of_projects)) +
+  geom_point(aes(color=No_of_projects)) + 
+  ggtitle("No of Projects vs Average Years Spent") + 
+  labs(y ="Average Years Spent",x = "No of Projects",fill="No of Projects")
+
+  
+
