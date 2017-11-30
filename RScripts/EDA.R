@@ -35,7 +35,7 @@ barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xl
 #By Promotion last 5 year
 ############################
 plot(hrData$promotion_last_5years)
-hist(hrData$promotion_last_5years,xlab = "Whether received a Promotion or not" , ylab = "Freq")
+hist(hrData$promotion_last_5years,xlab = "Whether received a Promotion or not" , ylab = "Frequency" ,main = "Distribution of people if they received a promotion")
 
 promo1Left = nrow(subset(hrData,promotion_last_5years ==1 & left==1))
 promo0Left = nrow(subset(hrData,promotion_last_5years ==0 & left==1))
