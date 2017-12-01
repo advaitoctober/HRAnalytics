@@ -17,11 +17,7 @@ library(quantmod)
 library(e1071)
 library("ggplot2")
 library("pROC")
-<<<<<<< HEAD
-=======
-#getSymbols('AAPL')
-#getSymbols('FB')
->>>>>>> 2116242283501d429ab6cfe210c8d9ba45891dd2
+
 #Data Loading
 #hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
