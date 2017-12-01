@@ -28,7 +28,7 @@ lowSal = subset(hrData, salary == "low")
 summary(highSal)
 summary(lowSal)
 #Number of people left in per salary band
-vSal = c('low','meduim','high')
+vSal = c('Low','Meduim','High')
 vTotPop = c(nrow(lowSal),nrow(medSal),nrow(highSal))
 vSalLeft = c(nrow(subset(lowSal, left ==1)),nrow(subset(medSal, left ==1)),nrow(subset(highSal, left ==1)) )
 salDF = data.frame(Salary=vSal,TotalEmployees = vTotPop, EmployeesLeft=vSalLeft)
@@ -41,7 +41,8 @@ salDF$Salary <- as.factor(salDF$Salary)
 ggplot(salDF,aes(x=salDF$Salary, y= salDF$PercentLeft,fill=salDF$Salary)) +
 geom_bar(stat="identity", position = "dodge") + 
 ggtitle("\tSalary Type vs Percentage Attrition") + 
-  labs(y ="Percentage left",x = "Salary Level",fill="Salary Levels")
+  labs(y ="Percentage left",x = "Salary Level",fill="Salary Levels") +
+  scale_x_discrete(limits=c('low','meduim','high'))
 
 
 ############################
