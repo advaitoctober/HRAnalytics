@@ -290,4 +290,22 @@ ggplot(leDF,aes(x=LastEvaluation, y=Attrition , group = 1)) +
 
 plot(leDF$LastEvaluation , leDF$Attrition)
 
+# Correlation panel
+my_cols = c("#3EBCC0","#F88179")
 
+panel.cor <- function(x, y){
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- round(cor(x, y), digits=2)
+  txt <- paste0("", r)
+  cex.cor <- 0.6/strwidth(txt)
+  text(0.5, 0.5, txt, cex = 3)
+}
+# Customize upper panel
+upper.panel<-function(x, y){
+  points(x,y, pch = 19, col = my_cols[(hrData$left)+1])
+}
+# Create the plots
+pairs(hrData[,c(1:6)], 
+      lower.panel = panel.cor,
+      upper.panel = upper.panel,cex.labels =1.8)
