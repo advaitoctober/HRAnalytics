@@ -1,10 +1,5 @@
 rm(list = ls())
-install.packages("quantmod")
-install.packages("rpart.plot")
-install.packages("pROC")
-
-#setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
-setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
+setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
 getwd()
 require(class)
 library(caret)
@@ -14,17 +9,11 @@ library("rpart.plot")
 library(randomForest)
 library(gbm)
 library(quantmod)
-library(e1071)
-library("ggplot2")
 library("pROC")
-<<<<<<< HEAD
-=======
-#getSymbols('AAPL')
-#getSymbols('FB')
->>>>>>> 2116242283501d429ab6cfe210c8d9ba45891dd2
+getSymbols('AAPL')
+getSymbols('FB')
 #Data Loading
-#hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
+hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
 
 leaveSat = hrData[,1]
@@ -85,44 +74,44 @@ trainErrVector = c(trainErrVector,LG_train_err)
 
 ##############################################
 #LDA
-###############################################
-#hrLDAMod <- lda(left~., data = hr_train)
-#summary(hrLDAMod)
-#
-##Predicting
-#hrLDAPred_test <- predict(hrLDAMod, newdata = hr_test, type = "response")
-#hrLDAPred_train <- predict(hrLDAMod, newdata = hr_train, type = "response")
-#
-#LDARocCurve <- roc(as.numeric(hrLDAPred_test$class),as.numeric(hr_test$left))
-#
-#LDA_test_err <- mean(hrLDAPred_test$class != hr_test$left)
-#LDA_train_err <- mean(hrLDAPred_train$class != hr_train$left)
-#
-#modelName = c(modelName,'LDA')
-#testErrVector = c(testErrVector,LDA_test_err)
-#trainErrVector = c(trainErrVector,LDA_train_err)
+##############################################
+hrLDAMod <- lda(left~., data = hr_train)
+summary(hrLDAMod)
+
+#Predicting
+hrLDAPred_test <- predict(hrLDAMod, newdata = hr_test, type = "response")
+hrLDAPred_train <- predict(hrLDAMod, newdata = hr_train, type = "response")
+
+LDARocCurve <- roc(as.numeric(hrLDAPred_test$class),as.numeric(hr_test$left))
+
+LDA_test_err <- mean(hrLDAPred_test$class != hr_test$left)
+LDA_train_err <- mean(hrLDAPred_train$class != hr_train$left)
+
+modelName = c(modelName,'LDA')
+testErrVector = c(testErrVector,LDA_test_err)
+trainErrVector = c(trainErrVector,LDA_train_err)
 
 
 ##############################################
 #QDA
 ##############################################
-#hrQDAMod <- qda(left~., data = hr_train)
-#summary(hrQDAMod)
-#
-##Predicting
-#hrQDAPred_test <- predict(hrQDAMod, newdata = hr_test, type = "response")
-#hrQDAPred_train <- predict(hrQDAMod, newdata = hr_train, type = "response")
-#
-#QDARocCurve <- roc(as.numeric(hrQDAPred_test$class),as.numeric(hr_test$left))
-#
-#QDA_test_err <- mean(hrQDAPred_test$class != hr_test$left)
-#QDA_train_err <- mean(hrQDAPred_train$class != hr_train$left)
-#
-#
-#
-#modelName = c(modelName,'QDA')
-#testErrVector = c(testErrVector,QDA_test_err)
-#trainErrVector = c(trainErrVector,QDA_train_err)
+hrQDAMod <- qda(left~., data = hr_train)
+summary(hrQDAMod)
+
+#Predicting
+hrQDAPred_test <- predict(hrQDAMod, newdata = hr_test, type = "response")
+hrQDAPred_train <- predict(hrQDAMod, newdata = hr_train, type = "response")
+
+QDARocCurve <- roc(as.numeric(hrQDAPred_test$class),as.numeric(hr_test$left))
+
+QDA_test_err <- mean(hrQDAPred_test$class != hr_test$left)
+QDA_train_err <- mean(hrQDAPred_train$class != hr_train$left)
+
+
+
+modelName = c(modelName,'QDA')
+testErrVector = c(testErrVector,QDA_test_err)
+trainErrVector = c(trainErrVector,QDA_train_err)
 
 #####################################
 #TREES
@@ -139,7 +128,7 @@ hrPruneTreeMod <- prune(hrTreeMod, cp = hrTreeMod$cptable[min_cp,1])
 ## plot the full tree and the pruned tree
 #rpart.plot(hrPruneTreeMod, compress=T,uniform = T)
 #text(hrPruneTreeMod, cex = 0.5,pretty = T)
-#prp(hrPruneTreeMod, , fallen.leaves = FALSE, type=4, extra=1, varlen=0, faclen=0, yesno.yshift=-1)
+prp(hrPruneTreeMod, , fallen.leaves = FALSE, type=4, extra=1, varlen=0, faclen=0, yesno.yshift=-1)
 
 
 hrPruneTreePred_test <- predict(hrPruneTreeMod, newdata = hr_test,type = 'class')
@@ -162,7 +151,7 @@ trainErrVector = c(trainErrVector,PruneTree_train_err)
 #############################################
 
 hrRFMod = randomForest(left~.,data = hr_train, n.tree =10000)
-#varImpPlot(hrRFMod)
+varImpPlot(hrRFMod)
 
 hrRFPred_test <- predict(hrRFMod, newdata = hr_test,type='class')
 hrRFPred_train <- predict(hrRFMod, newdata = hr_train, type='class')
@@ -182,7 +171,7 @@ trainErrVector = c(trainErrVector,RF_train_err)
 #Bagging
 ############################################
 hrBAGMod = randomForest(left~.,data = hr_train, n.tree =10000, mtry = 8)
-#varImpPlot(hrBAGMod)
+varImpPlot(hrBAGMod)
 
 hrBAGPred_test <- predict(hrBAGMod, newdata = hr_test,type='class')
 hrBAGPred_train <- predict(hrBAGMod, newdata = hr_train, type='class')
@@ -190,7 +179,7 @@ hrBAGPred_valid <- predict(hrBAGMod, newdata = hr_valid, type='class')
 
 
 BAGRocCurve <- roc(as.numeric(hrBAGPred_test),as.numeric(hr_test$left))
-
+plot(roccurve)
 
 BAG_test_err <- mean(hrBAGPred_test != hr_test$left)
 BAG_train_err <- mean(hrBAGPred_train != hr_train$left)
@@ -203,23 +192,23 @@ trainErrVector = c(trainErrVector,BAG_train_err)
 ############################################
 #Boosting
 ############################################
-#dep = floor(sqrt(NCOL(data)))
-#boost_train = hr_train
-#boost_train$left = as.numeric(boost_train$left)-1
-#hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =100,shrinkage = .0001 ,interaction.depth = dep,distribution = 'adaboost')
-#
-#hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 100)
-#hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 1000)
-#hrBOOSTPred_valid <- predict(hrBOOSTMod, newdata = hr_valid,type='response', n.trees = 1000)
-#
-#BOOST_test_err <- mean(hrBOOSTPred_test != hr_test$left)
-#BOOST_test_err
-#BOOST_train_err <- mean(hrBOOSTPred_train != hr_train$left)
-#BOOST_valid_err <- mean(hrBOOSTPred_valid != hr_valid$left)
-#
-#modelName = c(modelName,'Boosting')
-#testErrVector = c(testErrVector,BOOST_test_err)
-#trainErrVector = c(trainErrVector,BOOST_train_err)
+dep = floor(sqrt(NCOL(data)))
+boost_train = hr_train
+boost_train$left = as.numeric(boost_train$left)-1
+hrBOOSTMod = gbm(left~.,data = boost_train, n.tree =100,shrinkage = .0001 ,interaction.depth = dep,distribution = 'adaboost')
+
+hrBOOSTPred_test <- predict(hrBOOSTMod, newdata = hr_test,type='response', n.trees = 100)
+hrBOOSTPred_train <- predict(hrBOOSTMod, newdata = hr_train,type='response', n.trees = 1000)
+hrBOOSTPred_valid <- predict(hrBOOSTMod, newdata = hr_valid,type='response', n.trees = 1000)
+
+BOOST_test_err <- mean(hrBOOSTPred_test != hr_test$left)
+BOOST_test_err
+BOOST_train_err <- mean(hrBOOSTPred_train != hr_train$left)
+BOOST_valid_err <- mean(hrBOOSTPred_valid != hr_valid$left)
+
+modelName = c(modelName,'Boosting')
+testErrVector = c(testErrVector,BOOST_test_err)
+trainErrVector = c(trainErrVector,BOOST_train_err)
 
 errorDF = data.frame(Model_Name = modelName,Training_Error = trainErrVector,Test_Error = testErrVector)
 
@@ -236,8 +225,6 @@ ggplot(errorDF, aes(x = Model_Name,group = 1)) +
 errorDFMelt = melt(errorDF[,c("Model_Name","Training_Error","Test_Error")])
 ggplot(errorDFMelt, aes(x = Model_Name, y = value, colour = variable,group = 1)) + geom_line()
 
-
-
 ggplot()+
   geom_line(aes(RFRocCurve))
 
@@ -247,7 +234,7 @@ plot(QDARocCurve, add=TRUE, col='Pink',label = "QDA")
 plot(PruneTreeRocCurve, add=TRUE, col='Orange',label = "PrunedTree")
 plot(RFRocCurve, add=TRUE, col='Blue',label = "Random Forest")
 plot(BAGRocCurve, add=TRUE, col='red',label = "Bagging")
-legend("bottomright",legend = c("Logistic Regression","LDA","QDA","Pruned Tree","Random Forest","Bagging"))
+legend("bottomright",legend = c("Logistic Regression","LDA","QDA","Pruned Tree","Random Forest","Bagging"),)
 
 
 
