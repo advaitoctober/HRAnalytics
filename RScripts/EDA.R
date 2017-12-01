@@ -309,3 +309,5 @@ upper.panel<-function(x, y){
 pairs(hrData[,c(1:6)], 
       lower.panel = panel.cor,
       upper.panel = upper.panel,cex.labels =1.8)
+
+cor(hrData[,1:7])
