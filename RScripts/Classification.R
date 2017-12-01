@@ -12,7 +12,11 @@ library(quantmod)
 library(e1071)
 library("ggplot2")
 library("pROC")
+<<<<<<< HEAD
 library(psych)
+=======
+
+>>>>>>> cfe6e983f4f758c306081c133b30fb62141039a3
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)

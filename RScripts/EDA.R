@@ -28,7 +28,7 @@ lowSal = subset(hrData, salary == "low")
 summary(highSal)
 summary(lowSal)
 #Number of people left in per salary band
-vSal = c('low','meduim','high')
+vSal = c('Low','Meduim','High')
 vTotPop = c(nrow(lowSal),nrow(medSal),nrow(highSal))
 vSalLeft = c(nrow(subset(lowSal, left ==1)),nrow(subset(medSal, left ==1)),nrow(subset(highSal, left ==1)) )
 salDF = data.frame(Salary=vSal,TotalEmployees = vTotPop, EmployeesLeft=vSalLeft)
@@ -41,7 +41,8 @@ salDF$Salary <- as.factor(salDF$Salary)
 ggplot(salDF,aes(x=salDF$Salary, y= salDF$PercentLeft,fill=salDF$Salary)) +
 geom_bar(stat="identity", position = "dodge") + 
 ggtitle("\tSalary Type vs Percentage Attrition") + 
-  labs(y ="Percentage left",x = "Salary Level",fill="Salary Levels")
+  labs(y ="Percentage left",x = "Salary Level",fill="Salary Levels") +
+  scale_x_discrete(limits=c('low','meduim','high'))
 
 
 ############################
@@ -289,4 +290,22 @@ ggplot(leDF,aes(x=LastEvaluation, y=Attrition , group = 1)) +
 
 plot(leDF$LastEvaluation , leDF$Attrition)
 
+# Correlation panel
+my_cols = c("#3EBCC0","#F88179")
 
+panel.cor <- function(x, y){
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- round(cor(x, y), digits=2)
+  txt <- paste0("", r)
+  cex.cor <- 0.6/strwidth(txt)
+  text(0.5, 0.5, txt, cex = 3)
+}
+# Customize upper panel
+upper.panel<-function(x, y){
+  points(x,y, pch = 19, col = my_cols[(hrData$left)+1])
+}
+# Create the plots
+pairs(hrData[,c(1:6)], 
+      lower.panel = panel.cor,
+      upper.panel = upper.panel,cex.labels =1.8)
