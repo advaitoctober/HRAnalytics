@@ -10,8 +10,6 @@ library(randomForest)
 library(gbm)
 library(quantmod)
 library("pROC")
-getSymbols('AAPL')
-getSymbols('FB')
 #Data Loading
 hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
@@ -22,7 +20,6 @@ satPred <- mean(leaveSat != hrData$left)
 satPred
 
 hist(hrData$satisfaction_level)
-hrData$satisfaction_level = NULL
 #pairs(hrData)
 attach(hrData)
 
@@ -179,7 +176,7 @@ hrBAGPred_valid <- predict(hrBAGMod, newdata = hr_valid, type='class')
 
 
 BAGRocCurve <- roc(as.numeric(hrBAGPred_test),as.numeric(hr_test$left))
-plot(roccurve)
+
 
 BAG_test_err <- mean(hrBAGPred_test != hr_test$left)
 BAG_train_err <- mean(hrBAGPred_train != hr_train$left)

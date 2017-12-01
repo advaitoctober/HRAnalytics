@@ -1,10 +1,5 @@
 rm(list = ls())
-install.packages("quantmod")
-install.packages("rpart.plot")
-install.packages("pROC")
-
-#setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
-setwd("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts")
+setwd("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data")
 getwd()
 require(class)
 library(caret)
@@ -17,14 +12,9 @@ library(quantmod)
 library(e1071)
 library("ggplot2")
 library("pROC")
-<<<<<<< HEAD
-=======
-#getSymbols('AAPL')
-#getSymbols('FB')
->>>>>>> 2116242283501d429ab6cfe210c8d9ba45891dd2
+library(psych)
 #Data Loading
-#hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
-hrData <- read.delim("C:/DragonBallZ/git_Repo/HRAnalytics/HRAnalytics/RScripts/HR_comma_sep.csv", sep = ",", header= TRUE)
+hrData <- read.delim("/Users/varadtupe/Documents/GitHub/HRAnalytics/Data/HR_comma_sep.csv", sep = ",", header= TRUE)
 hrData$left <- as.factor(hrData$left)
 
 leaveSat = hrData[,1]
@@ -255,3 +245,7 @@ plot(hrData$number_project,hrData$average_montly_hours,col=hrData$left)
 pairs(hrData[,c(1:5,7)],col=hrData$left)
 
 hrData[1,c(1:5,7)]
+
+
+panels(hrData)
+pairs.panels(hrData)
