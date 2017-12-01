@@ -37,6 +37,7 @@ salDF["EmployeesStayed"] = (salDF["TotalEmployees"]-salDF["EmployeesLeft"])
 
 #barplot(salDF$PercentLeft,names.arg = salDF$Salary,ylab = "Attrition Percent",xlab = "Salary",main="Salary vs Attrition %")
 
+salDF$Salary <- as.factor(salDF$Salary)
 ggplot(salDF,aes(x=salDF$Salary, y= salDF$PercentLeft,fill=salDF$Salary)) +
 geom_bar(stat="identity", position = "dodge") + 
 ggtitle("\tSalary Type vs Percentage Attrition") + 
@@ -76,10 +77,13 @@ depDFMelt = melt(depDF[,c("Department","Stayed","Left")])
 
 
 ggplot(depDFMelt,aes(x = Department,y = value)) + 
-  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge") +
+theme(axis.text.x = element_text(size=10, angle=30 , hjust=0.95,vjust=0.95))
+
 
 ggplot(depDF,aes(x = Department,y = Attrition)) +  
-  geom_bar(aes(fill = Attrition),stat = "identity",position = "dodge")
+  geom_bar(aes(fill = Attrition),stat = "identity",position = "dodge") +
+  theme(axis.text.x = element_text(size=10, angle=30 , hjust=0.95,vjust=0.95))
 
 ################################
 #Satisfaction Level
@@ -208,7 +212,7 @@ noHours$Average_Monthly_Hours = as.factor(noHours$Average_Monthly_Hours)
 noHourMelt = melt(noHours[,c("Average_Monthly_Hours","Stayed","Left")])
 
 ggplot(noHourMelt,aes(x = Average_Monthly_Hours,y = value)) + 
-  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge") 
 
 
 ggplot(noHours,aes(x=Average_Monthly_Hours, y=Attrition , group = 1)) +
@@ -260,4 +264,29 @@ ggplot(p_vs_TimeSpentDF,aes(x=No_of_projects, y=Avg_Years_Spent)) +
   ggtitle("No of Projects vs Average Years Spent") + 
   labs(y ="Average Years Spent",x = "No of Projects",fill="No of Projects")
 
-ggcorr(hrData, hjust = 0.75, size = 5, color = "grey50", layout.exp = 1 ,title(main = "Correlation between various Parameters"))
+##correlation plot
+ggcorr(hrData[,1:(ncol(hrData)-2)], hjust = 0.75, size = 5, color = "grey25", layout.exp = 2)
+
+############################
+#By Last Evaluation
+############################
+leDF = data.frame(aggregate(left~last_evaluation,data = hrData,FUN = length))
+colnames(leDF) = c("LastEvaluation","TotalEmployees")
+leDF$Left = (aggregate(left~last_evaluation,data = hrData,FUN = sum))[,2]
+leDF$Stayed = leDF$TotalEmployees - leDF$Left
+leDF$Attrition = (leDF$Left / leDF$TotalEmployees) * 100
+leDF$LastEvaluation = as.factor(leDF$LastEvaluation)
+leDFMelt = melt(leDF[,c("LastEvaluation","Stayed","Left")])
+
+ggplot(leDFMelt,aes(x = LastEvaluation,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")+
+  theme(axis.text.x = element_text(size=7, angle=90 , hjust=0.95,vjust=0.95)) + xlab("Last Evaluation in Years")
+
+ggplot(leDF,aes(x=LastEvaluation, y=Attrition , group = 1)) +
+  geom_line(aes(color=Attrition)) +
+  geom_point(aes(color=Attrition)) + 
+  theme(axis.text.x = element_text(size=7, angle=90 , hjust=0.95,vjust=0.95)) + xlab("Last Evaluation in Years")
+
+plot(leDF$LastEvaluation , leDF$Attrition)
+
+
