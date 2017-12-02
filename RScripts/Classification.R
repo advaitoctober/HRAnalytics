@@ -173,7 +173,9 @@ trainErrVector = c(trainErrVector,RF_train_err)
 #Bagging
 ############################################
 hrBAGMod = randomForest(left~.,data = hr_train, n.tree =10000, mtry = 8)
-#varImpPlot(hrBAGMod)
+varImpPlot(hrBAGMod)
+
+
 
 hrBAGPred_test <- predict(hrBAGMod, newdata = hr_test,type='class')
 hrBAGPred_train <- predict(hrBAGMod, newdata = hr_train, type='class')
@@ -302,3 +304,12 @@ confTest = confusionMatrix(hr_test$left,hrBAGPred_test)
 confValid = confusionMatrix(hr_valid$left,hrBAGPred_valid)
 draw_confusion_matrix(confTest,"Test Data")
 draw_confusion_matrix(confValid,"Validation Data")
+
+
+
+cor(hrData[which(left == 1),c(1:5,7)])
+cor(hrData[which(left == 0),c(1:5,7)])
+
+
+nrow(hrData[which(left == 1),])
+nrow(hrData[which(left == 0),])

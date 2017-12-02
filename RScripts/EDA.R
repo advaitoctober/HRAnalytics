@@ -220,6 +220,10 @@ ggplot(noHours,aes(x=Average_Monthly_Hours, y=Attrition , group = 1)) +
   geom_line(aes(color=Attrition)) +
   geom_point(aes(color=Attrition))
 
+
+patchHr = hrData[which(average_montly_hours>125 & average_montly_hours<162 & left == 1),]
+nrow(patchHr)
+pairs(patchHr)
 ##########################################
 #No. of Projects
 ##########################################
@@ -311,3 +315,11 @@ pairs(hrData[,c(1:6)],
       upper.panel = upper.panel,cex.labels =1.8)
 
 cor(hrData[,1:7])
+
+nrow(hrData[which(satisfaction_level >0.7 & left == 1),])
+hrData[which(min(hrDataaverage_montly_hours) ]
+
+
+min(hrData$average_montly_hours))
+
+summary(hrData)
